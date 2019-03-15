@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!-- <meta name="viewport" content="width=device-width,user-scalable=no" /> -->
+	<link href="style.css" rel="stylesheet">
+	<title>html5 1</title>
+</head>
+<body>
+	<!-- onkeydown="Move()" -->
+	<h1 style="text-align: center;font-size: 80px;color: blue;">Keyboard protyper</h1>
+	<canvas id="canvas" width="640" height ="480" style="border: 1px solid;"></canvas>
+
+	<script type="text/javascript" src=key.js></script>
+	<div id="key"></div>
+
+
+	<script type="text/javascript">
+		
+		var canvas = document.getElementById('canvas');
+		canvas.setAttribute('style', "margin-left: auto;margin-right: auto;display: block; border:2px solid blue; border-radius:10px;");
+		var context = canvas.getContext('2d');
+		var rand_ch=[' ','f','j','d','k','s','l','a',';','g','h','r','u','e','i','w','o','q','p','t','y','v','m','c',',','x','.','z','b','n','/'];
+
+		var current_char=' ';
+		var level=5;
+		var game_str = "";
+		var str_len = 10;
+		var sqr_size=100;
+		
+
+
+
+		var x = 50,
+		y = 200;
+
+		var speed = 5;
+		var pos_speed = 25;
+		var error_speed=-pos_speed;
+
+		function drawRect(){
+			context.fillStyle = 'yellow';
+			
+			context.fillRect(x,y,sqr_size,sqr_size);
+		};
+
+
+		var nexGameStep = (function() {
+			return requestAnimationFrame ||
+			webkitRequestAnimationFrame  ||
+			mozRequestAnimationFrame     ||
+			oRequestAnimationFrame		 ||
+			msRequestAnimationFrame		 ||
+			function (callback){
+				setTimeout(callback,  1000 / 60);
+			};
+		})();
+
+
+
+
+		var gameEngineStart = function (callback){
+			gameEngine = callback;
+			gameEngineStep();
+
+		};
+
+
+		var gameEngineStep = function(){
+			gameEngine();
+			nexGameStep(gameEngineStep);
+		};
+
+
+		var setGameEngine = function (callback) {
+			gameEngine = callback;
+		};
+
+
+		var gameLoopRight = function () {
+			drawRect();
+			x+=1;
+			if(x>=250){
+				setGameEngine(gameLoopLeft);
+			}
+			// nexGameStep(gameLoop);
+			// requestAnimationFrame(gameLoop);
+		};
+
+		var gameLoopLeft = function () {
+			drawRect();
+			x-=1;
+			if(x<0){
+				setGameEngine(gameLoopRight);
+			}
+		};
+
+
+		var gameLoopMain = function () {
+			context.clearRect(0,0,640,480);
+
+			context.fillStyle = 'green';
+			
+			context.fillRect(520,0,120,480);
+			drawRect();
+			x-=speed/10;
+			if(x<0){
+				x=0;
+			}
+			drawString();
+
+		};
+
+		var drawString =function(){
+			context.font = "100px serif";
+			context.fillStyle = 'blue';
+			// context.clearRect(0,0,100,100);
+			// context.fillText("yomanigga",x,y,[1000]);
+			for(var i = 0; i<str_len;i++){
+			context.fillText(game_str[i],(x+30)+i*sqr_size,y+85);
+		}
+		};
+
+
+		var Move = function(){
+
+			x+=pos_speed;
+		};
+
+
+
+		var gen_string=function(){
+			for (var i =0; i<str_len;i++){
+				ch_char();
+				game_str+=current_char;
+			};
+		};
+
+		var ch_char = function(){
+  			current_char=rand_ch[getRandomInt(0,level)] ;
+		};
+
+		function getRandomInt(min, max) {
+		  	return Math.floor(Math.random() * (max - min)) + min;
+		};
+
+		function newLevel(){
+			if(x>520){
+			level+=1;
+			x=0;
+		}
+		};
+
+
+		function encLvl(){
+			level+=1;
+			if (level>30)level=30;
+			document.getElementById('level').innerHTML = 'Level: '+level;
+		}
+		function decLvl(){
+			level-=1;
+			if(level<1)level=1;
+			document.getElementById('level').innerHTML = 'Level: '+level;
+		}
+		function encSp(){
+			speed+=1;
+			
+			document.getElementById('speed').innerHTML = 'Speed: '+speed;
+		}
+		function decSp(){
+			speed-=1;
+			if(speed<1){
+				speed=1;
+			}
+			// speed = speed.toFixed(1);
+			document.getElementById('speed').innerHTML = 'Speed: '+speed;
+		}
+
+
+		gen_string();
+		// alert(game_str);
+
+		gameEngineStart(gameLoopMain);
+		// document.getElementById('level').innerHTML = 'Level:'+level;
+	
+	</script>
+	<div id="console" style="margin-left: auto;margin-right: auto;display: block;width:640px;" >
+		<div style="position:relative;bottom:30px;">
+		<h1 id="level" style="text-align: center;color:blue;font-size: 60px;">Level:</h1>
+			<div style="text-align: center;">
+				<input class="but" type="button"style="margin-left: 10%;" onclick="decLvl()" value="-"/>
+				
+				<input class="but" type="button" style="margin-left: 65%;" onclick="encLvl()" value="+"/>
+			</div>
+			</div>
+			<div style="position:relative;bottom:80px;">
+			<h1 id="speed" style="text-align: center;color:blue;font-size: 60px;">Speed:</h1>
+			<div>
+
+				<input class="but" type="button"style="margin-left: 10%;" onclick="decSp()" value="-"/>
+				
+				<input class="but" type="button" style="margin-left: 65%;" onclick="encSp()" value="+"/>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		document.getElementById('level').innerHTML = 'Level: '+level;
+		document.getElementById('speed').innerHTML = 'Speed: '+speed;
+		
+
+	</script>
+
+</body>
+
+</html>
